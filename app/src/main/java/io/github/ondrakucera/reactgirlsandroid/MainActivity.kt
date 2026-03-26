@@ -15,6 +15,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import io.github.ondrakucera.reactgirlsandroid.databinding.ActivityMainBinding
 
 private const val HOME_URL = "https://reactgirls.com/"
@@ -27,6 +29,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Ensure our content is laid out below the system bars (status/navigation bars)
+        // so the top of the loaded website is not hidden behind the status bar.
+        // We preserve any existing padding that might be defined in XML.
+        val initialPaddingLeft = binding.root.paddingLeft
+        val initialPaddingTop = binding.root.paddingTop
+        val initialPaddingRight = binding.root.paddingRight
+        val initialPaddingBottom = binding.root.paddingBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(
+                initialPaddingLeft + systemBars.left,
+                initialPaddingTop + systemBars.top,
+                initialPaddingRight + systemBars.right,
+                initialPaddingBottom + systemBars.bottom
+            )
+            insets
+        }
 
         configureWebView()
         configureSwipeRefresh()
